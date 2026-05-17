@@ -1,0 +1,73 @@
+*llm.txt*   Asynchronous LLM interaction for Vim
+
+==============================================================================
+INTRODUCTION                                                   *llm-introduction*
+
+llm.vim is a plugin that allows you to interact with local Large Language
+Models via Ollama. It supports code completion, refactoring, and general
+questions, all handled asynchronously to keep Vim responsive.
+
+==============================================================================
+MAPPINGS                                                       *llm-mappings*
+
+<leader>l           (Visual Mode)
+                    Uses the selected text as context and prompts for an
+                    instruction (e.g., "refactor this"). The selection is
+                    replaced with the LLM's response.
+
+<leader>k           (Normal or Visual Mode)
+                    Opens a vertical split on the right named "[LLM Answer]"
+                    and prompts for a question. The buffer uses Markdown
+                    formatting and is cleared for each new question.
+
+==============================================================================
+COMMANDS                                                        *llm-commands*
+
+:LLMModel [model]                                               *:LLMModel*
+                    Switch the current model (|g:llm_model|).
+                    Supports custom tab-completion for all locally
+                    available Ollama models. If called without arguments,
+                    it displays the current model.
+
+==============================================================================
+CONFIGURATION                                                   *llm-config*
+
+The following variables can be set in your |.vimrc| to override defaults:
+
+g:llm_model                                                 *g:llm_model*
+    The Ollama model name to use.
+    Default: 'granite4.1:3b'
+
+g:llm_url                                                   *g:llm_url*
+    The base URL for the Ollama API.
+    Default: 'http://127.0.0.1:11434'
+
+g:llm_system_prompt_question                   *g:llm_system_prompt_question*
+    The system prompt used for general questions.
+
+g:llm_visual_task_prompt                       *g:llm_visual_task_prompt*
+    The prompt used for code replacement in visual mode.
+
+g:llm_disable_mappings                       *g:llm_disable_mappings*
+    If set to 1, the default mappings for <leader>l and <leader>k are
+    not defined.
+    Default: 0
+
+==============================================================================
+CUSTOM MAPPINGS                                           *llm-custom-mappings*
+
+If you disable default mappings, you can define your own using the
+following functions:
+
+    llm#AskQuestion(is_visual)
+    llm#RequestCompletion(is_visual)
+
+Example:
+>
+    let g:llm_disable_mappings = 1
+    nnoremap <C-k> :call llm#AskQuestion(0)<CR>
+    xnoremap <C-k> :<C-u>call llm#AskQuestion(1)<CR>
+    xnoremap <C-l> :<C-u>call llm#RequestCompletion(1)<CR>
+<
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
